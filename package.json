@@ -1,0 +1,11 @@
+{
+  "name": "curiousrabbit",
+  "version": "1.0.0",
+  "description": "Recieve and send anonymous questions.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
