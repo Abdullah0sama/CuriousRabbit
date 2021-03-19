@@ -14,9 +14,11 @@ const User = require("./models/user.js");
 const Question = require("./models/question.js");
 
 
-var questionsRouter = require("./routes/questions.js");
+let questionsRouter = require("./routes/questions.js");
 app.use(questionsRouter);
 
+let indexRouter = require("./routes/index.js");
+app.use(indexRouter);
 
 
 app.listen(3000, () => {
