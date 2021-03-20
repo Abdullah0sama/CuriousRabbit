@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
     anonymous: Boolean,
-    user: {type: Schema.Types.ObjectId, ref: "User"},
+    whoAsked: {type: Schema.Types.ObjectId, ref: "User" },
+    user: {type: Schema.Types.ObjectId, ref: "User" },
     content: String, 
-    answered: Boolean,
+    isAnswered: { type: Boolean, default: false },
     answer: String
 })
 
