@@ -8,8 +8,8 @@ router.post("/u/:uid/question/", (req, res) => {
     var q = new Question(req.body);
 
     // checks if user is logged in if the question is not sent by anonymous
-    if(!q.anonymous) {
-        if(req.isAuthenticated())q.whoAsked = req.user;
+    if(!q.isAnonymous) {
+        if(req.isAuthenticated()) q.whoAsked = req.user;
         else return res.json({status: 'failed', msg: "Not authenticated"});
     }
 
