@@ -17,17 +17,13 @@ router.post("/u/:uid/question/", (req, res) => {
     .then( (usr) => {
         usr.questions.push(q);
         usr.save();
-        return usr;
+        q.user = usr.id;
+        q.save();
     })
-    .then( (usr) => {
-            q.user = usr.id;
-            console.log(q);
-            q.save();
-        })
-        .catch( (err) => {
-            console.log(err);
-            return res.send({status: "error"})
-        });
+    .catch( (err) => {
+        console.log(err);
+        return res.send({status: "error"})
+    });
     
     return res.json({status: "success"});
 })
