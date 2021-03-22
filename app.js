@@ -55,6 +55,8 @@ app.use(questionsRouter);
 let indexRouter = require("./routes/index.js");
 app.use(indexRouter);
 
+let userRouter = require("./routes/user.js");
+app.use(userRouter);
 
 app.listen(3000, () => {
     console.log("CuriousRabbit server has started!");
