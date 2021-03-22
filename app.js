@@ -25,7 +25,7 @@ const User = require("./models/user.js");
 const Question = require("./models/question.js");
 
 
-// authentication 
+// Authentication setup
 passport.use(new localStrategy(
     function(username, password, done){
         return User.findOne({username: username}).then( usr => {
@@ -39,6 +39,7 @@ passport.use(new localStrategy(
 passport.serializeUser(function(usr, done){
     done(null, usr._id);
 });
+
 passport.deserializeUser(function(id, done){
     User.findById(id).then(usr => done(null, usr))
     .catch(err => done(err));
@@ -47,10 +48,10 @@ passport.deserializeUser(function(id, done){
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+// Getting required routers
 
 let questionsRouter = require("./routes/questions.js");
-app.use(questionsRouter);
+app.use("/u/:uid", questionsRouter);
 
 let indexRouter = require("./routes/index.js");
 app.use(indexRouter);
@@ -60,4 +61,4 @@ app.use(userRouter);
 
 app.listen(3000, () => {
     console.log("CuriousRabbit server has started!");
-})
+});
