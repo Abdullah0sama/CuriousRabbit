@@ -79,4 +79,30 @@ router.post("/question/:qid/", middlewares.isAuthenticated, function(req, res){
         .catch( (err) => res.json({ status: 'failed' }) );
 });
 
+// Toggle the like status, if the post is liked by the user it unlikes it and if it
+// is unliked it add a like 
+
+router.post('/question/:qid/like', middlewares.isAuthenticated, function(req, res){
+    
+    Question.findOneAndUpdate(
+        {isAnswered: true, _id: req.params.qid},
+        [
+            {$set: { 'likes.byWho': {
+                $cond: {
+                    if: {$in: [req.user._id, '$likes.byWho']},
+                    then: {$setDifference: ['$likes.byWho', [req.user._id]]},
+                    else: {$concatArrays: ['$likes.byWho', [req.user._id]]}
+                }
+            }}},
+            {$set: {'likes.count': {$size: '$likes.byWho'}}}
+        ],
+        {new: true}
+    ).then( (updatedQ) => {
+
+        if(updatedQ == null) return res.json({ status: 'failed', msg: 'Question not found' });
+        return res.json({ status: 'success', likes: updatedQ.likes });
+
+    })
+    .catch( (err) => res.json({ status: 'error' }));
+});
 module.exports = router;
