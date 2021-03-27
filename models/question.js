@@ -7,7 +7,11 @@ const questionSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref: "User" },
     content: String, 
     isAnswered: { type: Boolean, default: false },
-    answer: String
+    answer: String,
+    likes: {
+        byWho: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        count: {type: Number, default: 0}
+    }
 })
 
 module.exports = mongoose.model("Question", questionSchema);
