@@ -17,7 +17,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require("bcrypt");
 
-mongoose.connect("mongodb://localhost/CuriousRabbitDB", {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true})
+mongoose.connect("mongodb://localhost/CuriousRabbitDB", {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false})
 .then(() => console.log("Connected Successfully to db"))
 .catch((err) => console.log(err));
 
@@ -57,7 +57,8 @@ let indexRouter = require("./routes/index.js");
 app.use(indexRouter);
 
 let userRouter = require("./routes/user.js");
-app.use(userRouter);
+app.use('/u/:uid', userRouter);
+
 
 app.listen(3000, () => {
     console.log("CuriousRabbit server has started!");
