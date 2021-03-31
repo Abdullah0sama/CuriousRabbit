@@ -21,8 +21,7 @@ router.post("/question/", (req, res) => {
         console.log(usr, usr == 0, !usr);
         if(!usr) return  Promise.reject({ status: 'failed', msg: 'User not found' }); 
 
-        usr.questions.push(newQuestion);
-        return usr.save();
+        return usr;
 
     })
     .then( usr => {
@@ -40,16 +39,15 @@ router.post("/question/", (req, res) => {
 
 });
 
-// User gets questions unanswered questions
-router.get("/question/", (req, res) => {
+// User gets unanswered questions
+router.get("/question/", middlewares.isAuthenticated, (req, res) => {
     var username = req.params.uid;
     
-    User.findOne({ username: username }, { password: 0 }).populate({ path: 'questions', match: { isAnswered: false }})
-        .then( (usr) => {
-
-            if( usr ) return res.json({ status: 'success', user: usr });
-            return res.json({ status: 'failed', msg: 'User not found.' });
-
+    if(req.user.username != username) return res.json({ status: 'failed', msg: 'Not authorized'});
+    
+    Question.find({user: req.user._id, isAnswered: false})
+        .then( (questions) => {
+            return res.json({ status: 'success', user: questions });
         })
         .catch( (err) => res.json({ status: 'error' }) );
 });

@@ -3,7 +3,7 @@ const middleware    = require('../middleware.js');
 
 const User          = require("../models/user.js");
 const Friendship    = require('../models/friendship.js');
-
+const Question      = require('../models/question');
 
 // Save the document of the user beibng visited with 'uid' username as it is needed in all calls to this route
 router.use((req, res, next) => {
@@ -16,8 +16,9 @@ router.use((req, res, next) => {
         .catch(err => console.log(err));
 });
 
+// Gets  visited user answered questions
 router.get('/', function(req, res){
-    User.findOne({username: req.params.uid }, { password: 0 }).populate({ path: 'questions', match: {isAnswered: true }})
+    Question.find({user: req.visitedUser._id, isAnswered: true})
         .then( (usr) => {
             res.json({ status: 'success', user: usr });
         })

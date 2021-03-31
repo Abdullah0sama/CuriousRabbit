@@ -2,12 +2,11 @@ const mongoose  = require("mongoose");
 const Schema    =  mongoose.Schema;
 
 const userSchema = new Schema({
-    username: { type: String, unique: true, required: true }, 
-    questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-    password: { type: String, required: [true, "Email is required"] },
-    email: { type: String, required: true , unique: true },
-    followers: {type: Number, default: 0}, 
-    following: {type: Number, default: 0}
+    username    : { type: String, unique: true, required: true }, 
+    password    : { type: String, required: true },
+    email       : { type: String, required: true , unique: true },
+    followers   : { type: Number, default: 0 }, 
+    following   : { type: Number, default: 0 }
 })
 
 module.exports = mongoose.model("User", userSchema);
