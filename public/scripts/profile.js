@@ -1,16 +1,16 @@
-const userUrl = window.location.pathname;
 
 // Gets user answered question and adds them in div with id 'questions'
 function getAnsweredQuestions(){
     fetch(userUrl + '/answeredQuestions')
-        .then(response => response.json())
-        .then( data => {
-            if(data.status == 'success'){
+    .then(response => response.json())
+    .then( data => {
+        if(data.status == 'success'){
                 data.questions.forEach(question => {
+
                     let ask;
-                    console.log(question);
                     if(question.isAnonymous) ask = '<a class="nav-link px-0" >Anonymous</a>'
                     else ask = `<a href="/u/${question.whoAsked.username}" class="nav-link px-0">${question.whoAsked.username}</a>`;
+
                     document.getElementById('answers').innerHTML += `
                     <div class="card text-start my-3">
                         <div class="card-header">
@@ -20,10 +20,15 @@ function getAnsweredQuestions(){
                         <div class="card-body">
                             <a class="nav-link px-0" href="/u/${question.user.username}">${question.user.username}</a>
                             <p class="card-text">${question.answer}</p>
+
+                            <a id="like-${question._id}" class="text-secondary" type="button">
+                            <i class="fas fa-heart"></i>   <span id="likesCount-${question._id}">${question.likes}</span>
+                            </a>
+
                         </div>
                     </div>
                     `;
-                    
+                    if(username) getLikeStatus(question._id);
                 });
         }
         })
@@ -32,11 +37,14 @@ function getAnsweredQuestions(){
 
 //gets the status of friendship between the visiting user and the visited user
 function getFollowStatus(){
+    let followBtn = document.getElementById('followBtn');
+    if(followBtn == null) return;
+    
     fetch(userUrl + '/follow')
         .then(response => response.json())
         .then(data => {
             if(data.status == 'success'){
-                let followBtn = document.getElementById('followBtn');
+                
                 if(data.isFollowed){
                     followBtn.innerText = 'Followed';
                     followBtn.setAttribute('class', 'btn btn-success unfollow');

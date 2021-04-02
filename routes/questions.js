@@ -2,7 +2,7 @@ const router        = require("express").Router({ mergeParams: true });
 const User          = require("../models/user.js");
 const Question      = require("../models/question.js");
 const middlewares   = require("../middleware.js");
-
+const Like          = require('../models/likes');
 router.post("/question/", (req, res) => {
 
     var newQuestion = new Question(req.body);
@@ -75,30 +75,67 @@ router.post("/question/:qid/", middlewares.isAuthenticated, function(req, res){
         .catch( (err) => res.json({ status: 'failed' }) );
 });
 
-// Toggle the like status, if the post is liked by the user it unlikes it and if it
-// is unliked it add a like 
+
+
+// Gets user status if he liked the question or not
+router.get('/question/:qid/like', middlewares.isAuthenticated, function(req, res){
+
+    let like = {
+        question: req.params.qid,
+        user: req.user._id
+    };
+    let likeStatus = {};
+
+    Like.findOne(like)
+        .then(status => {
+            likeStatus.isLiked = Boolean(status);
+            return Question.findById(like.question)
+
+        })
+        .then(question => {
+            likeStatus.count = question.likes;
+            res.json({ status: 'success', likeStatus: likeStatus});
+        })
+        .catch(err => res.json({ status: 'success' }));
+});
 
 router.post('/question/:qid/like', middlewares.isAuthenticated, function(req, res){
-    
-    Question.findOneAndUpdate(
-        {isAnswered: true, _id: req.params.qid},
-        [
-            {$set: { 'likes.byWho': {
-                $cond: {
-                    if: {$in: [req.user._id, '$likes.byWho']},
-                    then: {$setDifference: ['$likes.byWho', [req.user._id]]},
-                    else: {$concatArrays: ['$likes.byWho', [req.user._id]]}
-                }
-            }}},
-            {$set: {'likes.count': {$size: '$likes.byWho'}}}
-        ],
-        {new: true}
-    ).then( (updatedQ) => {
 
-        if(updatedQ == null) return res.json({ status: 'failed', msg: 'Question not found' });
-        return res.json({ status: 'success', likes: updatedQ.likes });
+    let like = {
+        question: req.params.qid,
+        user: req.user._id
+    };
 
-    })
-    .catch( (err) => res.json({ status: 'error' }));
+    Like.create(like)
+        .then(status => {
+
+            //  Increment likes in question
+            Question.findByIdAndUpdate(like.question, {$inc: { 'likes': 1 } }).exec();
+
+            res.json({ status: 'success' });
+        })
+        .catch(err => res.json({ status: 'error' }))
 });
+
+router.post('/question/:qid/unlike', middlewares.isAuthenticated, function(req, res){
+
+    let like = {
+        question: req.params.qid,
+        user: req.user._id
+    };
+
+    Like.findOneAndDelete(like)
+        .then(status => {
+
+            if(!status) return res.json({ status: 'failed', msg: 'Already not liked.' });
+
+            //  Decrement likes
+            Question.findByIdAndUpdate(like.question, {$inc: { 'likes': -1 } }).exec();
+
+            res.json({ status: 'success' });
+        })
+        .catch(err => res.json({ status: 'error' }))
+});
+
+
 module.exports = router;
