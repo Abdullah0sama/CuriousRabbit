@@ -7,7 +7,7 @@ const localStrategy     =  require("passport-local").Strategy;
 
 const session_secret = process.env.CR_session;
 const CR_password    = process.env.CR_password;
-
+const PORT           = process.env.PORT || 3000;
 const session = require("express-session");
 app.use(session({
     secret: session_secret,
@@ -70,6 +70,6 @@ let userRouter = require("./routes/user.js");
 app.use('/u/:uid', userRouter);
 
 
-app.listen(process.env.PORT | 3000, () => {
+app.listen(PORT, () => {
     console.log("CuriousRabbit server has started!");
 });
