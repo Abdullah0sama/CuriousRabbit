@@ -11,7 +11,8 @@ const questionSchema = new Schema({
     likes: {
         byWho: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         count: {type: Number, default: 0}
-    }
+    },
+    date: {type: Schema.Types.Date, default:Date.now }
 })
 
 module.exports = mongoose.model("Question", questionSchema);

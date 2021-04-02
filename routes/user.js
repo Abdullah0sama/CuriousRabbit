@@ -29,7 +29,7 @@ router.get('/', function(req, res){
 
 // Gets  visited user answered questions
 router.get('/answeredQuestions', function(req, res){
-    Question.find({user: req.visitedUser._id, isAnswered: true}).populate([{path: "user", select: 'username'},
+    Question.find({user: req.visitedUser._id, isAnswered: true}, null, {sort: {date: -1}}).populate([{path: "user", select: 'username'},
                                                                             {path: "whoAsked", select: 'username'}])
         .then( (usr) => {
             res.json({ status: 'success', questions: usr });

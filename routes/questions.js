@@ -43,7 +43,7 @@ router.get("/question/", middlewares.isAuthenticated, (req, res) => {
     
     if(req.user.username != username) return res.json({ status: 'failed', msg: 'Not authorized'});
     
-    Question.find({user: req.user._id, isAnswered: false}).populate({path: 'whoAsked', select: 'username'})
+    Question.find({user: req.user._id, isAnswered: false}, null, {sort : {date:-1}}).populate({path: 'whoAsked', select: 'username'})
         .then( (questions) => {
             return res.json({ status: 'success', questions: questions });
         })
@@ -64,7 +64,7 @@ router.post("/question/:qid/", middlewares.isAuthenticated, function(req, res){
 
                 question.answer = req.body.answer;
                 question.isAnswered = true;
-
+                question.date = Date.now();
                 question.save().then(
 
                     res.json({ status: 'success' })
