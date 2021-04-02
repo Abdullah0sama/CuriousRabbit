@@ -24,7 +24,6 @@ function getFeed(){
                             </div>
                     </div>
                     `
-                    
                 });
             }
         })

@@ -39,7 +39,6 @@ router.get('/inbox', middlewares.isAuthenticated, function(req, res){
 //Registeration route for user
 router.post("/register", async function(req, res){
     let user = req.body.user;
-    console.log(user);
     await bcrypt.hash(user.password, saltRounds).then( hashed => {
         user.password = hashed;
     }).catch( err => console.log(err));

@@ -6,6 +6,8 @@ const passport          =   require("passport");
 const localStrategy     =  require("passport-local").Strategy;
 
 const session_secret = process.env.CR_session;
+const CR_password    = process.env.CR_password;
+
 const session = require("express-session");
 app.use(session({
     secret: session_secret,
@@ -19,7 +21,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require("bcrypt");
 
-mongoose.connect("mongodb://localhost/CuriousRabbitDB", {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false})
+mongoose.connect(`mongodb+srv://ao:${CR_password}@curiousrabbit.mdni0.mongodb.net/CR?retryWrites=true&w=majority`, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false})
 .then(() => console.log("Connected Successfully to db"))
 .catch((err) => console.log(err));
 
@@ -68,6 +70,6 @@ let userRouter = require("./routes/user.js");
 app.use('/u/:uid', userRouter);
 
 
-app.listen(3000, () => {
+app.listen(process.env.PORT | 3000, () => {
     console.log("CuriousRabbit server has started!");
 });
