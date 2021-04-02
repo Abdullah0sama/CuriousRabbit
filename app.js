@@ -14,6 +14,8 @@ app.use(session({
     resave: true
 }));
 
+app.use(express.static('public'));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require("bcrypt");
 
@@ -41,12 +43,18 @@ passport.serializeUser(function(usr, done){
 });
 
 passport.deserializeUser(function(id, done){
-    User.findById(id).then(usr => done(null, usr))
+    User.findById(id, {password: 0}).then(usr => done(null, usr))
     .catch(err => done(err));
 });
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Passing user to local to be rendered
+app.use(function(req, res, next){
+    res.locals.user = req.user;
+    next();
+});
 
 // Getting required routers
 

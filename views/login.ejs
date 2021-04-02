@@ -1,0 +1,18 @@
+    <%- include('partials/header.ejs') %>
+<div class="container d-flex  align-items-center">
+    <div class="bg-light p-5 rounded border  mx-auto w-50">
+        <h1 class="text-center">LogIn</h1>
+        <form method="POST" action="/login">
+            <div class="mb-3">
+                <label  class="form-label fs-4">Username</label>
+                <input type="text" class="form-control form-control-lg" name="username" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label  class="form-label fs-4">Password</label>
+                <input type="password" class="form-control form-control-lg" name="password" >
+            </div>
+            <button type="submit" class="btn btn-lg btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+    <%- include('partials/footer.ejs') %> 
