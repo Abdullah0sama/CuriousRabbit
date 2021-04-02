@@ -7,7 +7,7 @@ const Question      = require('../models/question');
 
 // Save the document of the user beibng visited with 'uid' username as it is needed in all calls to this route
 router.use((req, res, next) => {
-    User.findOne({username: req.params.uid})
+    User.findOne({username: req.params.uid}, {password: 0})
         .then((usr) => {
             if(!usr) return res.json({ status: 'failed', msg: 'No user with this name.' });
             req.visitedUser = usr;
@@ -16,11 +16,23 @@ router.use((req, res, next) => {
         .catch(err => console.log(err));
 });
 
-// Gets  visited user answered questions
+// --------------------------------------------------------------------------------------------------------
+
+// Rendering visited user profile
 router.get('/', function(req, res){
-    Question.find({user: req.visitedUser._id, isAnswered: true})
+    res.render('profile.ejs', {visitedUser: req.visitedUser});
+});
+
+// --------------------------------------------------------------------------------------------------------
+
+
+
+// Gets  visited user answered questions
+router.get('/answeredQuestions', function(req, res){
+    Question.find({user: req.visitedUser._id, isAnswered: true}).populate([{path: "user", select: 'username'},
+                                                                            {path: "whoAsked", select: 'username'}])
         .then( (usr) => {
-            res.json({ status: 'success', user: usr });
+            res.json({ status: 'success', questions: usr });
         })
         .catch( (err) => res.json({status: 'error' }) );
 });
@@ -53,7 +65,7 @@ router.post('/follow' ,middleware.isAuthenticated , function(req, res){
 
     Friendship.create(follow)
         .then( (status) => {
-            console.log(status);
+            
             // Increment followed user's followers count
             User.findByIdAndUpdate(follow.followed, {$inc: {followers: 1}}).exec();
             // Increment following user following count
@@ -94,7 +106,7 @@ router.get('/followers', function(req, res){
             id: req.visitedUser._id,
             find: 'follower' 
         })
-        .then( followers => res.json({ status: 'success', followers: followers}))
+        .then( followers => res.json({ status: 'success', followers: (followers.length) ? followers[0]: {count : 0} } ))
         .catch ( err => res.json({ status: err }));
 });
 
@@ -105,7 +117,7 @@ router.get('/following', function(req, res){
         id: req.visitedUser._id,
         find: 'followed'
     })
-        .then( following => res.json({ status: 'success', following: following}))
+        .then( following => res.json({ status: 'success', following: (following.length)? following[0] : {count : 0} } ))
         .catch ( err => res.json({ status: 'error' }));
 });
 

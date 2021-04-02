@@ -1,0 +1,14 @@
+.unfollow:hover{
+    background-color:#dc3545;
+    border-color: #dc3545;
+}
+
+#anonymousToggle{
+    width: 2.4rem !important;
+    height: 1.6rem !important;
+    margin-right: 5px;
+}
+#anonymousToggle:checked{
+    background-color: #198754 !important;
+
+}
