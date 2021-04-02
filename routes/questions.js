@@ -6,7 +6,6 @@ const middlewares   = require("../middleware.js");
 router.post("/question/", (req, res) => {
 
     var newQuestion = new Question(req.body);
-
     // Checks if the user is authenticated if the question is not sent by isAnonymous is set to false
     if(!newQuestion.isAnonymous) {
         if(req.isAuthenticated()) newQuestion.whoAsked = req.user;
@@ -18,7 +17,6 @@ router.post("/question/", (req, res) => {
     .then( (usr) => {
 
         // If the user is not found
-        console.log(usr, usr == 0, !usr);
         if(!usr) return  Promise.reject({ status: 'failed', msg: 'User not found' }); 
 
         return usr;
@@ -45,9 +43,9 @@ router.get("/question/", middlewares.isAuthenticated, (req, res) => {
     
     if(req.user.username != username) return res.json({ status: 'failed', msg: 'Not authorized'});
     
-    Question.find({user: req.user._id, isAnswered: false})
+    Question.find({user: req.user._id, isAnswered: false}).populate({path: 'whoAsked', select: 'username'})
         .then( (questions) => {
-            return res.json({ status: 'success', user: questions });
+            return res.json({ status: 'success', questions: questions });
         })
         .catch( (err) => res.json({ status: 'error' }) );
 });
